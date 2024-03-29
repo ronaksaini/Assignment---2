@@ -116,6 +116,13 @@
                 listItem.remove();
             }
         });
+        socket.on('formSubmissionSuccess', () => {
+            alert('Data submitted successfully');
+        });
+
+        socket.on('formSubmissionError', (errorMessage) => {
+            alert(`Error: ${errorMessage}`);
+        });
 
         // Handle form submission
         document.getElementById('myForm').addEventListener('submit', (event) => {
