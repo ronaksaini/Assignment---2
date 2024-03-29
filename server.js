@@ -54,6 +54,7 @@ io.on('connection', (socket) => {
       
       // Emit new user data to all connected clients
       io.emit('newUser', { name: userData.firstName + ' ' + userData.lastName, email: userData.email, socketId: socket.id,mobileNo:userData.mobileNo,street:userData.street,city:userData.city,state:userData.state,country:userData.country,loginId:userData.loginId });
+      socket.emit('formSubmissionSuccess');
     } catch (err) {
       console.error(err);
       // Send error message to the client
