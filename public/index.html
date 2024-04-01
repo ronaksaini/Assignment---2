@@ -81,7 +81,7 @@
 
         <button type="submit">Save</button>
     </form>
-    
+    <a href="/liveUsers.html">Live</a>
     <ul id="liveUsers"></ul>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
@@ -103,11 +103,7 @@
             listItem.setAttribute('data-userdata', JSON.stringify(userData));   
             document.getElementById('liveUsers').appendChild(listItem);
 
-            listItem.addEventListener('click', () => {
-                const userData = JSON.parse(listItem.getAttribute('data-userdata')); // Parse JSON user data
-                const userDataString = `Name: ${userData.name}\nEmail: ${userData.email}\nMobile No: ${userData.mobileNo}\nStreet: ${userData.street}\nCity: ${userData.city}\nState: ${userData.state}\nCountry: ${userData.country}\nLogin ID: ${userData.loginId}`; // Construct user data string
-                alert(userDataString); // Show user data in alert
-            }); 
+           
         });
 
         socket.on('userDisconnected', (socketId) => {
@@ -115,13 +111,6 @@
             if (listItem) {
                 listItem.remove();
             }
-        });
-        socket.on('formSubmissionSuccess', () => {
-            alert('Data submitted successfully');
-        });
-
-        socket.on('formSubmissionError', (errorMessage) => {
-            alert(`Error: ${errorMessage}`);
         });
 
         // Handle form submission
