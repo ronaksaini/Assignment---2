@@ -54,7 +54,6 @@ io.on('connection', (socket) => {
       
       // Emit new user data to all connected clients
       io.emit('newUser', { name: userData.firstName + ' ' + userData.lastName, email: userData.email, socketId: socket.id,mobileNo:userData.mobileNo,street:userData.street,city:userData.city,state:userData.state,country:userData.country,loginId:userData.loginId });
-      socket.emit('formSubmissionSuccess');
     } catch (err) {
       console.error(err);
       // Send error message to the client
@@ -63,11 +62,12 @@ io.on('connection', (socket) => {
   });
 
   // Handle client disconnection
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
-    // Emit disconnect event to all connected clients
-    io.emit('userDisconnected', socket.id);
-  });
+
+});
+io.on('disconnect', () => {
+  console.log('Client disconnected:', socket.id);
+  // Emit disconnect event to all connected clients
+  io.emit('userDisconnected', socket.id);
 });
 
 // Start the server
