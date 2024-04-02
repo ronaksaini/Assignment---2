@@ -112,6 +112,15 @@
                 listItem.remove();
             }
         });
+      
+        socket.on('formSubmissionSuccess', () => {
+            alert('Form submitted successfully!');
+            document.getElementById('myForm').reset();
+        });
+    
+        socket.on('formSubmissionError', (errorMessage) => {
+            alert(errorMessage);
+        });
 
         // Handle form submission
         document.getElementById('myForm').addEventListener('submit', (event) => {
@@ -123,3 +132,7 @@
     </script>
 </body>
 </html>
+
+
+
+
