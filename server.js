@@ -4,16 +4,12 @@ const bodyParser = require("body-parser");
 const socketIo = require("socket.io");
 
 const app = express();
-const port = 3000;
 const server = require('http').Server(app);
 const io = socketIo(server);
 
 // Connect to MongoDB Atlas
 mongoose
-  .connect(
-    "mongodb+srv://ronaksaini783:E5HRj9QmIK1JsoYu@node-assignment-1.3t30enw.mongodb.net/?retryWrites=true&w=majority&appName=node-assignment-1",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect("mongodb://localhost:27017",{dbName:"test"})
   .then(() => console.log("Connected successfully to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
@@ -42,18 +38,31 @@ app.use(bodyParser.json());
 // Serve static files (HTML, JavaScript)
 app.use(express.static("public"));
 
+
+
+let AllUsers = []
+
+
 // Socket.io connection event
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
   // Handle form submission
   socket.on('submitForm', async (userData) => {
+    
     try {
-      const newUser = new User(userData);
+      let newUser = new User(userData);
       await newUser.save();
-      
+      newUser = {
+        userData,
+        socketId : socket.id
+      }
+      AllUsers.push(newUser);
+      socket.join("live room")
+      io.to("live room").emit("userJoined" , newUser);
       // Emit new user data to all connected clients
       io.emit('newUser', { name: userData.firstName + ' ' + userData.lastName, email: userData.email, socketId: socket.id,mobileNo:userData.mobileNo,street:userData.street,city:userData.city,state:userData.state,country:userData.country,loginId:userData.loginId });
+      socket.emit('formSubmissionSuccess');
     } catch (err) {
       console.error(err);
       // Send error message to the client
@@ -62,13 +71,18 @@ io.on('connection', (socket) => {
   });
 
   // Handle client disconnection
+  
+  io.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+    // Emit disconnect event to all connected clients
+    io.emit('userDisconnected', socket.id);
+  });
+});
 
-});
-io.on('disconnect', () => {
-  console.log('Client disconnected:', socket.id);
-  // Emit disconnect event to all connected clients
-  io.emit('userDisconnected', socket.id);
-});
+app.get("/api/user",(req,res)=>{
+    console.log(AllUsers)
+  res.send(AllUsers)
+})
 
 // Start the server
 const PORT = process.env.PORT || 3000;
